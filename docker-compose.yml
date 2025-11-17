@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  ehf-analyzer:
+    build: .
+    container_name: ehf-analyzer
+    ports:
+      - "1000:1000"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./uploads_ehf:/app/uploads_ehf
+    restart: unless-stopped

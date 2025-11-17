@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Notarial Briatte - Résultats Analyse EHF</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            color: #2c3e50;
+        }
+        .result-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+            padding: 3rem;
+            margin: 2rem auto;
+            max-width: 1000px;
+        }
+        .title {
+            color: #2c3e50;
+            font-weight: 400;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        .result-box {
+            background: #fefefe;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .result-content {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: none;
+        }
+        .btn-custom {
+            background: #B8860B;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 30px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-custom:hover {
+            background: #8B7355;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(184, 134, 11, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+        .btn-secondary-custom {
+            background: #6c757d;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 30px;
+            font-weight: 500;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary-custom:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+            color: white;
+        }
+        .file-info {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #B8860B;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .copy-btn:hover {
+            background: #8B7355;
+            transform: scale(1.05);
+        }
+        .success-message {
+            display: none;
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .section-header {
+            color: #B8860B;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+        }
+        .notarial-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #B8860B;
+        }
+        .logo-container {
+            margin-bottom: 1rem;
+        }
+        .logo-b {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #B8860B;
+            border: 2px solid #B8860B;
+            width: 60px;
+            height: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-family: 'Georgia', serif;
+        }
+        .office-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #B8860B;
+            margin-bottom: 0.3rem;
+            letter-spacing: 1.5px;
+        }
+        .office-details {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 0.2rem;
+        }
+        .notaire-name {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="result-container">
+            <div class="notarial-header">
+                <div class="logo-container">
+                    <div class="logo-b">B</div>
+                </div>
+                <div class="office-name">BRIATTE</div>
+                <div class="office-details">OFFICE NOTARIAL DE SAINT-JEAN-CAP-FERRAT - FRANCE</div>
+                <div class="notaire-name">Alain-Xavier BRIATTE, Notaire Associé</div>
+            </div>
+            
+            <h1 class="title text-center">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                Analyse Terminée
+            </h1>
+
+            <div class="file-info">
+                <h5 class="section-header">
+                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                    Fichier Analysé
+                </h5>
+                <p class="mb-0">
+                    <strong>{{ filename }}</strong>
+                    <span class="badge bg-success ms-2">Traité avec succès</span>
+                </p>
+            </div>
+
+            <div class="result-box">
+                <h5 class="section-header">
+                    <i class="fas fa-robot me-2"></i>
+                    Réponse de l'IA - Données de Ventes Extraites
+                </h5>
+                <button class="copy-btn" onclick="copyToClipboard()" title="Copier le résultat">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <div class="result-content" id="resultContent">{{ result }}</div>
+                <div class="success-message" id="copySuccess">
+                    <i class="fas fa-check me-1"></i>
+                    Résultat copié dans le presse-papiers !
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="{{ url_for('upload_file') }}" class="btn btn-custom me-3">
+                    <i class="fas fa-upload me-2"></i>
+                    Analyser un Autre Document
+                </a>
+                <button class="btn btn-secondary-custom" onclick="downloadResult()">
+                    <i class="fas fa-download me-2"></i>
+                    Télécharger le Résultat
+                </button>
+            </div>
+
+            <div class="mt-4 text-center">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Les données extraites incluent les ventes immobilières les plus récentes du document EHF analysé
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function copyToClipboard() {
+            const resultContent = document.getElementById('resultContent').textContent;
+            navigator.clipboard.writeText(resultContent).then(function() {
+                const successMessage = document.getElementById('copySuccess');
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            }).catch(function(err) {
+                console.error('Erreur lors de la copie: ', err);
+                // Fallback pour les navigateurs plus anciens
+                const textArea = document.createElement('textarea');
+                textArea.value = resultContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const successMessage = document.getElementById('copySuccess');
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            });
+        }
+
+        function downloadResult() {
+            const resultContent = document.getElementById('resultContent').textContent;
+            const filename = '{{ filename }}';
+            const blob = new Blob([resultContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `analyse_${filename.replace('.pdf', '')}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Animation d'entrée
+        window.addEventListener('load', function() {
+            document.querySelector('.result-container').style.opacity = '0';
+            document.querySelector('.result-container').style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                document.querySelector('.result-container').style.transition = 'all 0.6s ease';
+                document.querySelector('.result-container').style.opacity = '1';
+                document.querySelector('.result-container').style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

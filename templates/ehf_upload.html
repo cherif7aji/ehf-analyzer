@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyseur EHF - Office Notarial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --notarial-gold: #B8860B;
+            --notarial-dark: #2c3e50;
+            --notarial-light: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: var(--notarial-light);
+            color: var(--notarial-dark);
+        }
+        
+        .header-notarial {
+            background: linear-gradient(135deg, var(--notarial-gold), #DAA520);
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .logo-briatte {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .logo-briatte .logo-b {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--notarial-gold);
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .office-info h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .office-info .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .office-info .location {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.2rem;
+        }
+        
+        .upload-zone {
+            border: 3px dashed var(--notarial-gold);
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover {
+            border-color: #DAA520;
+            background-color: #fefefe;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(184, 134, 11, 0.15);
+        }
+        
+        .upload-zone.dragover {
+            border-color: #DAA520;
+            background-color: rgba(184, 134, 11, 0.05);
+        }
+        
+        .btn-notarial {
+            background-color: var(--notarial-gold);
+            border-color: var(--notarial-gold);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-notarial:hover {
+            background-color: #DAA520;
+            border-color: #DAA520;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+        
+        .card-notarial {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            background: white;
+        }
+        
+        .alert-notarial {
+            border-radius: 10px;
+            border: none;
+        }
+        
+        .features-list {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+        }
+        
+        .feature-icon {
+            color: var(--notarial-gold);
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .loading-spinner {
+            display: none;
+        }
+        
+        .file-info {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(184, 134, 11, 0.1);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête Notarial -->
+    <div class="header-notarial">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="logo-briatte">
+                        <div class="logo-b">B</div>
+                    </div>
+                </div>
+                <div class="col office-info">
+                    <h1>OFFICE NOTARIAL DE SAINT-JEAN-CAP-FERRAT</h1>
+                    <div class="subtitle">Alain-Xavier BRIATTE, Notaire Associé</div>
+                    <div class="location">SAINT-JEAN-CAP-FERRAT - FRANCE</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Messages d'erreur -->
+                {% if error %}
+                <div class="alert alert-danger alert-notarial" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <!-- Formulaire d'upload -->
+                <div class="card card-notarial mb-4">
+                    <div class="card-body p-4">
+                        <h2 class="card-title text-center mb-4">
+                            <i class="fas fa-file-pdf text-danger me-2"></i>
+                            Télécharger un document EHF
+                        </h2>
+                        
+                        <form id="uploadForm" action="/analyze" method="post" enctype="multipart/form-data">
+                            <div class="upload-zone" id="uploadZone">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h4>Glissez-déposez votre fichier EHF ici</h4>
+                                <p class="text-muted mb-3">ou cliquez pour sélectionner un fichier</p>
+                                <input type="file" id="fileInput" name="file" accept=".pdf" class="d-none" required>
+                                <button type="button" class="btn btn-notarial" id="chooseFileBtn">
+                                    <i class="fas fa-folder-open me-2"></i>
+                                    Choisir un fichier
+                                </button>
+                            </div>
+                            
+                            <div class="file-info" id="fileInfo">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <span id="fileName"></span>
+                                    <span id="fileSize" class="text-muted ms-2"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-notarial btn-lg" id="analyzeBtn" disabled>
+                                    <i class="fas fa-search me-2"></i>
+                                    Analyser le document
+                                </button>
+                                <div class="loading-spinner mt-3" id="loadingSpinner">
+                                    <div class="spinner-border text-warning" role="status">
+                                        <span class="visually-hidden">Analyse en cours...</span>
+                                    </div>
+                                    <p class="mt-2">Analyse en cours, veuillez patienter...</p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Fonctionnalités -->
+                <div class="features-list">
+                    <h3 class="mb-4">
+                        <i class="fas fa-cogs text-warning me-2"></i>
+                        Fonctionnalités d'analyse
+                    </h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="feature-item">
+                                <i class="fas fa-home feature-icon"></i>
+                                <span>Propriétaires actuels identifiés</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-university feature-icon"></i>
+                                <span>Hypothèques actives détectées</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-exchange-alt feature-icon"></i>
+                                <span>Mutations immobilières analysées</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-item">
+                                <i class="fas fa-chart-bar feature-icon"></i>
+                                <span>Statistiques détaillées</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-calendar-alt feature-icon"></i>
+                                <span>Chronologie des actes</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt feature-icon"></i>
+                                <span>Analyse sécurisée et confidentielle</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Drag & Drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+
+        uploadZone.addEventListener('click', (e) => {
+            // Ne pas déclencher si on clique sur le bouton
+            if (e.target.id !== 'chooseFileBtn' && !e.target.closest('#chooseFileBtn')) {
+                fileInput.click();
+            }
+        });
+
+        // Gestionnaire spécifique pour le bouton
+        document.getElementById('chooseFileBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                fileName.textContent = file.name;
+                fileSize.textContent = `(${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                fileInfo.style.display = 'block';
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        uploadForm.addEventListener('submit', (e) => {
+            analyzeBtn.style.display = 'none';
+            loadingSpinner.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
